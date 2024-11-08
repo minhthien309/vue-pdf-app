@@ -1037,7 +1037,7 @@ if (AppOptions) {
 }
 
 const themeCacheKey = "vue-pdf-app-theme";
-const errorHandler = console.error.bind(console);
+// const errorHandler = console.error.bind(console);
 
 // pdf_print_service reassigns window.print.
 // Assign original window.print on component destroy.
@@ -1141,7 +1141,7 @@ export default class PdfViewer extends Vue {
         .then(this.open.bind(this))
         .then(this.bindSidebarToggleEvents.bind(this))
         .then(this.bindFindbarToggleEvents.bind(this))
-        .catch(errorHandler);
+        .catch(this.errorHandle);
     }
   }
 
@@ -1203,7 +1203,7 @@ export default class PdfViewer extends Vue {
             this.fileName || fileMetadata.contentDispositionFilename;
         })
         .then(this.openDocument.bind(this))
-        .catch(errorHandler);
+        .catch(this.errorHandle);
     }
   }
 
@@ -1215,7 +1215,7 @@ export default class PdfViewer extends Vue {
     if (pdfApp.PDFViewerApplication?.pdfViewer?.pagesPromise) {
       // @ts-ignore
       await pdfApp.PDFViewerApplication.pdfViewer.pagesPromise.catch(
-        errorHandler
+        this.errorHandle
       );
 
       if (this.pageNumber) {
@@ -1318,6 +1318,11 @@ export default class PdfViewer extends Vue {
   @Watch("pdf")
   private pdfChangeHandler() {
     this.open();
+  }
+
+  private errorHandle(error: any) {
+    this.$emit('onError', error);
+    console.error.bind(console);
   }
 }
 </script>
